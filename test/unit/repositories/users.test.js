@@ -69,7 +69,7 @@ describe("Users repository", () => {
       willBeDeletedAddedUser
     );
     expect(shouldBeUndefinedUser).toBeNull();
-    const shouldBeDefinedUser = await usersRepository.delete(stayAddedUser.id);
+    const shouldBeDefinedUser = await usersRepository.getById(stayAddedUser.id);
     expect(shouldBeDefinedUser).toBeDefined();
   });
 
@@ -92,7 +92,7 @@ describe("Users repository", () => {
       name: chance.name(),
       gender: genders.MALE,
     });
-    console.log(clonedUser);
+
     const updatedUser = await usersRepository.update(clonedUser);
     expect(updatedUser).toEqual(clonedUser);
   });

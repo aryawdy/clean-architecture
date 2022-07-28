@@ -1,8 +1,10 @@
 const { User, userConstraint } = require("./User");
-const { Product } = require("./Product.js");
-
+const { Product } = require("./Product");
+const { Order } = require("./Order");
 module.exports = {
   User,
+  Product,
+  Order,
   constants: {
     userConstraint,
   },
