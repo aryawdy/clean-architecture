@@ -1,5 +1,5 @@
 const {
-  user: { addUserUseCase },
+  user: { addUserUseCase, getUserById },
 } = require("../../../src/useCases");
 
 const Chance = require("chance");
@@ -16,6 +16,13 @@ const { v4 } = require("uuid");
 describe("User use cases", () => {
   const mockUserRepo = {
     add: jest.fn(async (user) => ({ ...user, id: v4() })),
+    getById: jest.fn(async (id) => ({
+      id,
+      name: chance.name(),
+      lastName: chance.last(),
+      gender: genders.NOT_SPECIFIED,
+      meta: {},
+    })),
   };
 
   const dependencies = {
@@ -50,6 +57,23 @@ describe("User use cases", () => {
       expect(call.lastName).toBe(testUserData.lastName);
       expect(call.gender).toBe(testUserData.gender);
       expect(call.meta).toBe(testUserData.meta);
+    });
+  });
+
+  describe("get user use cases", () => {
+    test("User should be added", async () => {
+      const fakeId = v4();
+      const userById = await getUserById(dependencies).execute({
+        id: fakeId,
+      });
+      expect(userById).toBeDefined();
+      expect(userById.id).toBe(fakeId);
+      expect(userById.name).toBeDefined();
+      expect(userById.lastName).toBeDefined();
+      expect(userById.gender).toBeDefined();
+      expect(userById.meta).toBeDefined();
+      const call = mockUserRepo.getById.mock.calls[0][0];
+      expect(call).toBe(fakeId);
     });
   });
 });
