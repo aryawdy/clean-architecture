@@ -1,20 +1,16 @@
 const {
-  user: { addUserUseCase, getUserById, updateUserUseCase, deleteUserUseCase },
+  product: {},
 } = require("../../../src/useCases");
 
 const Chance = require("chance");
 const chance = new Chance();
-const {
-  constants: {
-    userConstraint: { genders },
-  },
-} = require("../../../src/entities");
+const { Product } = require("../../../src/entities");
 
 const { v4 } = require("uuid");
 
-describe("User use cases", () => {
-  const mockUserRepo = {
-    add: jest.fn(async (user) => ({ ...user, id: v4() })),
+describe("Product use cases", () => {
+  const mockProductRepo = {
+    add: jest.fn(async (product) => ({ ...product, id: v4() })),
     getById: jest.fn(async (id) => ({
       id,
       name: chance.name(),
@@ -22,36 +18,34 @@ describe("User use cases", () => {
       gender: genders.NOT_SPECIFIED,
       meta: {},
     })),
-    update: jest.fn(async (user) => user),
-    delete: jest.fn(async (user) => user),
+    update: jest.fn(async (product) => product),
+    delete: jest.fn(async (product) => product),
   };
 
   const dependencies = {
-    usersRepository: mockUserRepo,
+    productsRepository: mockProductRepo,
   };
 
   describe("Add user use cases", () => {
     test("User should be added", async () => {
-      const testUserData = {
+      const testProductData = {
         name: chance.name(),
-        lastName: chance.last(),
-        gender: genders.MALE,
-        meta: {
-          hair: {
-            color: "red",
-          },
-        },
+        description: chance.last(),
+        images: genders.MALE,
+        price: chance.sentence(),
+        color: chance.color(),
+        meta: {},
       };
 
-      const addedUser = await addUserUseCase(dependencies).execute(
-        testUserData
+      const addedProduct = await addProductUseCase(dependencies).execute(
+        testProductData
       );
-      expect(addedUser).toBeDefined();
-      expect(addedUser.id).toBeDefined();
-      expect(addedUser.name).toBe(testUserData.name);
-      expect(addedUser.lastName).toBe(testUserData.lastName);
-      expect(addedUser.gender).toBe(testUserData.gender);
-      expect(addedUser.meta).toBe(testUserData.meta);
+      expect(addedProduct).toBeDefined();
+      expect(addedProduct.id).toBeDefined();
+      expect(addedProduct.name).toBe(testProductData.name);
+      expect(addedProduct.lastName).toBe(testProductData.lastName);
+      expect(addedProduct.gender).toBe(testProductData.gender);
+      expect(addedProduct.meta).toBe(testProductData.meta);
 
       const call = mockUserRepo.add.mock.calls[0][0];
       expect(call.id).toBeUndefined();

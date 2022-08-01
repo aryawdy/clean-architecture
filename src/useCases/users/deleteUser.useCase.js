@@ -4,7 +4,7 @@ module.exports = (dependencies) => {
     throw new Error("The users repository should be exist in");
   }
   const execute = ({ user = {} }) => {
-    return usersRepository.update(user);
+    return usersRepository.delete(user);
   };
   return {
     execute,
