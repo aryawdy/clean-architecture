@@ -1,5 +1,10 @@
 const {
-  product: {},
+  product: {
+    addProductUseCase,
+    getProductById,
+    updateProductUseCase,
+    deleteProductUseCase,
+  },
 } = require("../../../src/useCases");
 
 const Chance = require("chance");
@@ -14,8 +19,10 @@ describe("Product use cases", () => {
     getById: jest.fn(async (id) => ({
       id,
       name: chance.name(),
-      lastName: chance.last(),
-      gender: genders.NOT_SPECIFIED,
+      description: chance.sentence(),
+      images: [v4(), v4()],
+      price: chance.natural(),
+      color: chance.color(),
       meta: {},
     })),
     update: jest.fn(async (product) => product),
@@ -26,98 +33,100 @@ describe("Product use cases", () => {
     productsRepository: mockProductRepo,
   };
 
-  describe("Add user use cases", () => {
-    test("User should be added", async () => {
-      const testProductData = {
+  describe("Add product use cases", () => {
+    test("Product should be added", async () => {
+      const testProductData = new Product({
         name: chance.name(),
-        description: chance.last(),
-        images: genders.MALE,
-        price: chance.sentence(),
+        description: chance.sentence(),
+        images: [v4(), v4()],
+        price: chance.natural(),
         color: chance.color(),
-        meta: {},
-      };
+        meta: {
+          comment: "the best product of the year",
+        },
+      });
 
-      const addedProduct = await addProductUseCase(dependencies).execute(
+      const savedProduct = await addProductUseCase(dependencies).execute(
         testProductData
       );
-      expect(addedProduct).toBeDefined();
-      expect(addedProduct.id).toBeDefined();
-      expect(addedProduct.name).toBe(testProductData.name);
-      expect(addedProduct.lastName).toBe(testProductData.lastName);
-      expect(addedProduct.gender).toBe(testProductData.gender);
-      expect(addedProduct.meta).toBe(testProductData.meta);
+      expect(savedProduct).toBeDefined();
+      expect(savedProduct.id).toBeDefined();
+      expect(savedProduct.name).toBe(testProductData.name);
+      expect(savedProduct.description).toBe(testProductData.description);
+      expect(savedProduct.images).toBe(testProductData.images);
+      expect(savedProduct.price).toBe(testProductData.price);
+      expect(savedProduct.color).toBe(testProductData.color);
+      expect(savedProduct.meta).toBe(testProductData.meta);
 
-      const call = mockUserRepo.add.mock.calls[0][0];
-      expect(call.id).toBeUndefined();
-      expect(call.name).toBe(testUserData.name);
-      expect(call.lastName).toBe(testUserData.lastName);
-      expect(call.gender).toBe(testUserData.gender);
-      expect(call.meta).toBe(testUserData.meta);
+      const expectedProductData = mockProductRepo.add.mock.calls[0][0];
+      expect(expectedProductData).toEqual(testProductData);
     });
   });
 
-  describe("get user use cases", () => {
-    test("get user by id", async () => {
+  describe("get product use cases", () => {
+    test("get product by id", async () => {
       const fakeId = v4();
-      const userById = await getUserById(dependencies).execute({
+      const productById = await getProductById(dependencies).execute({
         id: fakeId,
       });
-      expect(userById).toBeDefined();
-      expect(userById.id).toBe(fakeId);
-      expect(userById.name).toBeDefined();
-      expect(userById.lastName).toBeDefined();
-      expect(userById.gender).toBeDefined();
-      expect(userById.meta).toBeDefined();
-      const call = mockUserRepo.getById.mock.calls[0][0];
+      expect(productById).toBeDefined();
+      expect(productById.id).toBe(fakeId);
+      expect(productById.name).toBeDefined();
+      expect(productById.description).toBeDefined();
+      expect(productById.images).toBeDefined();
+      expect(productById.price).toBeDefined();
+      expect(productById.color).toBeDefined();
+      expect(productById.meta).toBeDefined();
+      const call = mockProductRepo.getById.mock.calls[0][0];
       expect(call).toBe(fakeId);
     });
   });
 
-  describe("update user use cases", () => {
-    test("User should be updated", async () => {
+  describe("update product use cases", () => {
+    test("Product should be updated", async () => {
       const testData = {
         id: v4(),
         name: chance.name(),
-        lastName: chance.last(),
-        gender: genders.FEMALE,
+        description: chance.sentence(),
+        images: [v4(), v4()],
+        price: chance.natural(),
+        color: chance.color(),
         meta: {
-          education: {
-            school: "full",
-          },
+          comment: "the best product of the year",
         },
       };
-      const updatedUser = await updateUserUseCase(dependencies).execute({
-        user: testData,
+      const updatedProduct = await updateProductUseCase(dependencies).execute({
+        product: testData,
       });
 
-      expect(updatedUser).toEqual(testData);
+      expect(updatedProduct).toEqual(testData);
 
-      const expectedUser = mockUserRepo.update.mock.calls[0][0];
-      expect(expectedUser).toEqual(testData);
+      const expectedProduct = mockProductRepo.update.mock.calls[0][0];
+      expect(expectedProduct).toEqual(testData);
     });
   });
 
-  describe("delete user use cases", () => {
-    test("User should be deleted", async () => {
+  describe("delete product use cases", () => {
+    test("Product should be deleted", async () => {
       const testData = {
         id: v4(),
         name: chance.name(),
-        lastName: chance.last(),
-        gender: genders.FEMALE,
+        description: chance.sentence(),
+        images: [v4(), v4()],
+        price: chance.natural(),
+        color: chance.color(),
         meta: {
-          education: {
-            school: "full",
-          },
+          comment: "the best product of the year",
         },
       };
-      const deletedUser = await deleteUserUseCase(dependencies).execute({
-        user: testData,
+      const deletedProduct = await deleteProductUseCase(dependencies).execute({
+        product: testData,
       });
 
-      expect(deletedUser).toEqual(testData);
+      expect(deletedProduct).toEqual(testData);
 
-      const expectedUser = mockUserRepo.delete.mock.calls[0][0];
-      expect(expectedUser).toEqual(testData);
+      const expectedProduct = mockProductRepo.delete.mock.calls[0][0];
+      expect(expectedProduct).toEqual(testData);
     });
   });
 });
