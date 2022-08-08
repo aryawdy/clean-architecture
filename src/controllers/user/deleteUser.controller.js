@@ -9,10 +9,16 @@ module.exports = (dependencies) => {
 
   return async (req, res, next) => {
     try {
-      const { id } = req.params;
-      const getUserById = getUserById(dependencies);
-      const response = await getUserById.execute({
-        id,
+      const { id, name, lastName, gender, meta } = req.body;
+      const deleteUser = deleteUserUseCase(dependencies);
+      const response = await deleteUser.execute({
+        user: {
+          id,
+          name,
+          lastName,
+          gender,
+          meta,
+        },
       });
       res.json(new Response({ status: true, content: response }));
       next();
